@@ -1,4 +1,4 @@
-using ContractMonthlyClaimSystem.Data;
+﻿using ContractMonthlyClaimSystem.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +27,7 @@ namespace ContractMonthlyClaimSystem
             builder.Services.AddRazorPages();
 
             // ------------------------------------------------------
-            // ? ADD SESSION SERVICES
+            // ✅ ADD SESSION SERVICES
             // ------------------------------------------------------
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession(options =>
@@ -60,7 +60,7 @@ namespace ContractMonthlyClaimSystem
             app.UseRouting();
 
             // ------------------------------------------------------
-            // ? ENABLE SESSION BEFORE AUTH / ROUTING ENDPOINTS
+            // ✅ ENABLE SESSION BEFORE AUTH / ROUTING ENDPOINTS
             // ------------------------------------------------------
             app.UseSession();
 

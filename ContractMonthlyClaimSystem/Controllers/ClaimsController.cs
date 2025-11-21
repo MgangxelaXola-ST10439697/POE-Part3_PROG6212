@@ -63,9 +63,13 @@ namespace ContractMonthlyClaimSystem.Controllers
                     return View(claim);
                 }
 
+                // Get lecturer info from session
+                var lecturerName = HttpContext.Session.GetString("UserName");
+                var lecturerId = HttpContext.Session.GetString("UserId");
+
                 var newClaim = new Claim
                 {
-                    LecturerName = claim.LecturerName?.Trim(),
+                    LecturerName = claim.LecturerName?.Trim() ?? lecturerName,
                     LecturerEmail = claim.LecturerEmail?.Trim().ToLower(),
                     HoursWorked = claim.HoursWorked,
                     HourlyRate = claim.HourlyRate,
@@ -111,7 +115,7 @@ namespace ContractMonthlyClaimSystem.Controllers
                 _context.Claims.Add(newClaim);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = $"Claim submitted successfully! Claim ID: {newClaim.Id}. Total: R{newClaim.TotalAmount:N2}";
+                TempData["SuccessMessage"] = $"Claim submitted successfully! Claim ID: {newClaim.ClaimId}. Total: R{newClaim.TotalAmount:N2}";
                 return RedirectToAction(nameof(MyClaims));
             }
             catch (Exception ex)
@@ -127,13 +131,17 @@ namespace ContractMonthlyClaimSystem.Controllers
             try
             {
                 var userRole = HttpContext.Session.GetString("UserRole");
+                var userName = HttpContext.Session.GetString("UserName");
+
                 if (userRole != "Lecturer")
                 {
                     TempData["ErrorMessage"] = "Access denied. Lecturers only.";
                     return RedirectToAction("Index", "Home");
                 }
 
+                // FIXED: Filter claims by the logged-in lecturer's name
                 var claims = await _context.Claims
+                    .Where(c => c.LecturerName == userName)
                     .OrderByDescending(c => c.DateSubmitted)
                     .ToListAsync();
 
@@ -151,20 +159,24 @@ namespace ContractMonthlyClaimSystem.Controllers
             try
             {
                 var userRole = HttpContext.Session.GetString("UserRole");
+                var userName = HttpContext.Session.GetString("UserName");
+
                 if (userRole != "Lecturer")
                 {
                     TempData["ErrorMessage"] = "Access denied.";
                     return RedirectToAction("Index", "Home");
                 }
 
+                // FIXED: Filter claims by the logged-in lecturer
                 var claims = await _context.Claims
+                    .Where(c => c.LecturerName == userName)
                     .OrderByDescending(c => c.DateSubmitted)
                     .ToListAsync();
 
                 ViewBag.TotalClaims = claims.Count;
                 ViewBag.PendingClaims = claims.Count(c => c.Status == "Pending");
-                ViewBag.ApprovedClaims = claims.Count(c => c.Status == "Approved");
-                ViewBag.RejectedClaims = claims.Count(c => c.Status == "Rejected");
+                ViewBag.ApprovedClaims = claims.Count(c => c.Status.Contains("Approved"));
+                ViewBag.RejectedClaims = claims.Count(c => c.Status.Contains("Rejected"));
 
                 return View(claims);
             }

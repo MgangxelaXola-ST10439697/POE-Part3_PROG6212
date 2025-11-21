@@ -24,11 +24,11 @@ namespace ContractMonthlyClaimSystem.Migrations
 
             modelBuilder.Entity("ContractMonthlyClaimSystem.Models.Claim", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ClaimId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClaimId"));
 
                     b.Property<DateTime>("DateSubmitted")
                         .HasColumnType("datetime2");
@@ -60,7 +60,7 @@ namespace ContractMonthlyClaimSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ClaimId");
 
                     b.ToTable("Claims");
                 });

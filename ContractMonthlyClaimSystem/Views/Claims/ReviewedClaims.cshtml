@@ -102,7 +102,7 @@
                             @foreach (var claim in Model)
                             {
                                 <tr>
-                                    <td class="px-4 fw-bold text-primary">#@claim.Id</td>
+                                    <td class="px-4 fw-bold text-primary">#@claim.ClaimId</td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2"
@@ -141,14 +141,14 @@
                                         <div class="btn-group" role="group">
                                             <form asp-action="ManagerApprove" method="post" class="d-inline">
                                                 @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@claim.Id" />
+                                                <input type="hidden" name="id" value="@claim.ClaimId" />
                                                 <button type="submit" class="btn btn-success btn-sm"
                                                         onclick="return confirm('Give final approval for this claim?')">
                                                     <i class="bi bi-check-all me-1"></i>Final Approve
                                                 </button>
                                             </form>
                                             <button type="button" class="btn btn-danger btn-sm"
-                                                    data-bs-toggle="modal" data-bs-target="#rejectModal@(claim.Id)">
+                                                    data-bs-toggle="modal" data-bs-target="#rejectModal@(claim.ClaimId)">
                                                 <i class="bi bi-x-circle me-1"></i>Reject
                                             </button>
                                         </div>
@@ -156,19 +156,19 @@
                                 </tr>
 
                                 <!-- Reject Modal -->
-                                <div class="modal fade" id="rejectModal@(claim.Id)" tabindex="-1">
+                                <div class="modal fade" id="rejectModal@(claim.ClaimId)" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header bg-danger text-white">
                                                 <h5 class="modal-title">
-                                                    <i class="bi bi-x-octagon me-2"></i>Reject Claim #@claim.Id
+                                                    <i class="bi bi-x-octagon me-2"></i>Reject Claim #@claim.ClaimId
                                                 </h5>
                                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                                             </div>
                                             <form asp-action="ManagerReject" method="post">
                                                 @Html.AntiForgeryToken()
                                                 <div class="modal-body">
-                                                    <input type="hidden" name="id" value="@claim.Id" />
+                                                    <input type="hidden" name="id" value="@claim.ClaimId" />
 
                                                     <div class="alert alert-warning">
                                                         <i class="bi bi-exclamation-triangle me-2"></i>

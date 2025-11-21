@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
 namespace ContractMonthlyClaimSystem.Controllers
 {
     public class AccountController : Controller
@@ -14,7 +13,7 @@ namespace ContractMonthlyClaimSystem.Controllers
         public IActionResult Login(string username, string password)
         {
             // LECTURER LOGIN
-            if (username == "lecturer" && password == "lect123")
+            if (username == "lecturer" && password == "Lecturer@123!")
             {
                 HttpContext.Session.SetString("UserRole", "Lecturer");
                 HttpContext.Session.SetString("UserName", "Dr. John Doe");
@@ -23,7 +22,7 @@ namespace ContractMonthlyClaimSystem.Controllers
                 return RedirectToAction("Submit", "Claims");
             }
             // PROGRAMME COORDINATOR LOGIN
-            else if (username == "coordinator" && password == "coord123")
+            else if (username == "coordinator" && password == "Coordinator@123!")
             {
                 HttpContext.Session.SetString("UserRole", "ProgrammeCoordinator");
                 HttpContext.Session.SetString("UserName", "Prof. Sarah Smith");
@@ -32,7 +31,7 @@ namespace ContractMonthlyClaimSystem.Controllers
                 return RedirectToAction("PendingReview", "Claims");
             }
             // ACADEMIC MANAGER LOGIN
-            else if (username == "manager" && password == "mgr123")
+            else if (username == "manager" && password == "Manager@123!")
             {
                 HttpContext.Session.SetString("UserRole", "AcademicManager");
                 HttpContext.Session.SetString("UserName", "Prof. David Johnson");
@@ -41,7 +40,7 @@ namespace ContractMonthlyClaimSystem.Controllers
                 return RedirectToAction("ApprovalQueue", "Claims");
             }
             // ADMIN (HR) LOGIN
-            else if (username == "admin" && password == "admin123")
+            else if (username == "admin" && password == "Admin@123!")
             {
                 HttpContext.Session.SetString("UserRole", "Admin");
                 HttpContext.Session.SetString("UserName", "Emma Wilson");

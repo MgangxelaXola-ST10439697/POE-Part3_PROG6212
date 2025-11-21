@@ -28,10 +28,12 @@ namespace ContractMonthlyClaimSystem.Controllers
             var approvedClaims = await _context.Claims.CountAsync(c => c.Status == "Manager Approved");
             var rejectedClaims = await _context.Claims.CountAsync(c => c.Status.Contains("Rejected"));
 
-            var totalAmount = await _context.Claims.SumAsync(c => c.TotalAmount);
-            var approvedAmount = await _context.Claims
+            var claims = await _context.Claims.ToListAsync();
+            var totalAmount = claims.Sum(c => c.TotalAmount);
+            var approvedAmount = claims
                 .Where(c => c.Status == "Manager Approved")
-                .SumAsync(c => c.TotalAmount);
+                .Sum(c => c.TotalAmount);
+
 
             ViewBag.TotalClaims = totalClaims;
             ViewBag.PendingClaims = pendingClaims;
@@ -94,7 +96,7 @@ namespace ContractMonthlyClaimSystem.Controllers
 
             foreach (var claim in claims)
             {
-                csv.AppendLine($"{claim.Id},{claim.LecturerName},{claim.LecturerEmail},{claim.HoursWorked},{claim.HourlyRate},{claim.TotalAmount},{claim.Status},{claim.DateSubmitted:yyyy-MM-dd HH:mm}");
+                csv.AppendLine($"{claim.ClaimId},{claim.LecturerName},{claim.LecturerEmail},{claim.HoursWorked},{claim.HourlyRate},{claim.TotalAmount},{claim.Status},{claim.DateSubmitted:yyyy-MM-dd HH:mm}");
             }
 
             var bytes = Encoding.UTF8.GetBytes(csv.ToString());

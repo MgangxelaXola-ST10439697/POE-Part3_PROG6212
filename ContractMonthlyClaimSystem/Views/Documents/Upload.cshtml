@@ -26,7 +26,7 @@
                         <option value="">-- Select a Claim --</option>
                         @foreach (var claim in ViewBag.Claims)
                         {
-                            <option value="@claim.Id">Claim #@claim.Id - @claim.LecturerName (Submitted: @claim.DateSubmitted.ToString("yyyy-MM-dd"))</option>
+                            <option value="@claim.Id">Claim #@claim.ClaimId - @claim.LecturerName (Submitted: @claim.DateSubmitted.ToString("yyyy-MM-dd"))</option>
                         }
                     </select>
                     <div class="form-text">Select the claim you want to attach this document to</div>

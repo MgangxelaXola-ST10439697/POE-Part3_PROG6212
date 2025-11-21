@@ -4,7 +4,7 @@ namespace ContractMonthlyClaimSystem.Models
 {
     public class Claim
     {
-        public int Id { get; set; }
+        public int ClaimId { get; set; }
 
         [Required(ErrorMessage = "Lecturer name is required")]
         [Display(Name = "Lecturer Name")]

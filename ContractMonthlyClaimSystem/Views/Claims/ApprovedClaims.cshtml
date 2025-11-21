@@ -87,7 +87,7 @@
                             @foreach (var claim in Model)
                             {
                                 <tr class="@(claim.Status == "Manager Rejected" ? "table-danger" : "")">
-                                    <td class="px-4 fw-bold">#@claim.Id</td>
+                                    <td class="px-4 fw-bold">#@claim.ClaimId</td>
                                     <td>@claim.LecturerName</td>
                                     <td class="text-muted">@claim.LecturerEmail</td>
                                     <td>@claim.HoursWorked hrs</td>

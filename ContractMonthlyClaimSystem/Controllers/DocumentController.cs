@@ -38,7 +38,7 @@ namespace ContractMonthlyClaimSystem.Controllers
                     return RedirectToAction(nameof(Upload));
                 }
 
-                var claim = await _context.Claims.FirstOrDefaultAsync(c => c.Id == claimId);
+                var claim = await _context.Claims.FirstOrDefaultAsync(c => c.ClaimId == claimId);
                 if (claim == null)
                 {
                     TempData["ErrorMessage"] = "Claim not found! Please check the Claim ID.";
