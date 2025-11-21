@@ -1,0 +1,158 @@
+﻿@model ContractMonthlyClaimSystem.Models.AddEmployeeViewModel
+
+@{
+    ViewData["Title"] = "Add Employee";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h4 class="mb-0">
+                        <i class="bi bi-person-plus-fill me-2"></i>Add New Employee
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="AddEmployee" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Note:</strong> The new employee will be able to log in immediately with the email and password you provide.
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Name" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-1"></i>First Name
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Name" class="form-control form-control-lg" placeholder="John" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Surname" class="form-label fw-semibold">
+                                    <i class="bi bi-person me-1"></i>Last Name
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="Surname" class="form-control form-control-lg" placeholder="Doe" />
+                                <span asp-validation-for="Surname" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Department" class="form-label fw-semibold">
+                                <i class="bi bi-building me-1"></i>Department
+                            </label>
+                            <input asp-for="Department" class="form-control form-control-lg" placeholder="e.g., Construction, Masonry, etc." />
+                            <span asp-validation-for="Department" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DefaultRatePerJob" class="form-label fw-semibold">
+                                    <i class="bi bi-cash-coin me-1"></i>Default Rate Per Job (R)
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="DefaultRatePerJob" type="number" step="0.01"
+                                       class="form-control form-control-lg" placeholder="200.00" />
+                                <span asp-validation-for="DefaultRatePerJob" class="text-danger"></span>
+                                <small class="text-muted">This will be the default rate for workers. Managers can use 0.</small>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="RoleName" class="form-label fw-semibold">
+                                    <i class="bi bi-shield-check me-1"></i>Role
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select asp-for="RoleName" class="form-select form-select-lg">
+                                    <option value="">-- Select Role --</option>
+                                    <option value="Worker">Worker (IC/Lecturer)</option>
+                                    <option value="ProjectManager">Project Manager (Coordinator)</option>
+                                    <option value="ConstructionManager">Construction Manager</option>
+                                    <option value="HR">HR Administrator</option>
+                                </select>
+                                <span asp-validation-for="RoleName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3">
+                            <i class="bi bi-key me-2"></i>Login Credentials
+                        </h5>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-1"></i>Email Address
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Email" type="email" class="form-control form-control-lg"
+                                   placeholder="employee@cmcs.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <small class="text-muted">This will be used as their username</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="TempPassword" class="form-label fw-semibold">
+                                <i class="bi bi-lock me-1"></i>Temporary Password
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="TempPassword" type="password" class="form-control form-control-lg"
+                                   placeholder="Must be strong (e.g., Pass@123!)" />
+                            <span asp-validation-for="TempPassword" class="text-danger"></span>
+                            <small class="text-muted">
+                                Must contain: uppercase, lowercase, number, and special character
+                            </small>
+                        </div>
+
+                        @if (ViewData.ModelState.ErrorCount > 0)
+                        {
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <strong>Error:</strong> Please correct the errors above.
+                                <ul class="mb-0 mt-2">
+                                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="EmployeeList" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-left me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-check-circle me-2"></i>Create Employee
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-3 border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold">
+                        <i class="bi bi-lightbulb me-2"></i>Role Descriptions
+                    </h6>
+                    <ul class="mb-0 small">
+                        <li><strong>Worker:</strong> Can submit claims and track their status</li>
+                        <li><strong>Project Manager:</strong> Reviews and approves/rejects worker claims</li>
+                        <li><strong>Construction Manager:</strong> Final review after PM approval</li>
+                        <li><strong>HR:</strong> Marks claims as paid, manages employees, exports reports</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

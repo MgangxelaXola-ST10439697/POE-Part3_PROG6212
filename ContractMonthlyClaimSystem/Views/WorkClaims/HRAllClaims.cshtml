@@ -1,0 +1,232 @@
+﻿@model IEnumerable<ContractMonthlyClaimSystem.Models.WorkClaim>
+
+@{
+    ViewData["Title"] = "All Claims - HR";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2>
+                <i class="bi bi-table"></i> All Work Claims
+            </h2>
+            <p class="text-muted">Complete overview of all submitted claims</p>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group" role="group">
+                <a asp-controller="Hr" asp-action="HrSummary" class="btn btn-info">
+                    <i class="bi bi-graph-up"></i> View Summary
+                </a>
+                <a asp-controller="Hr" asp-action="HrExportCsv" class="btn btn-success">
+                    <i class="bi bi-download"></i> Export CSV
+                </a>
+                <a asp-controller="Hr" asp-action="EmployeeList" class="btn btn-outline-secondary">
+                    <i class="bi bi-people"></i> Employees
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No claims have been submitted yet.
+        </div>
+    }
+    else
+    {
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-warning">
+                    <div class="card-body text-center">
+                        <h3 class="text-warning">@Model.Count(c => c.Status == "Submitted")</h3>
+                        <p class="mb-0 text-muted">Submitted</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-info">
+                    <div class="card-body text-center">
+                        <h3 class="text-info">@Model.Count(c => c.Status == "PM Approved")</h3>
+                        <p class="mb-0 text-muted">PM Approved</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-success">
+                    <div class="card-body text-center">
+                        <h3 class="text-success">@Model.Count(c => c.Status == "CM Approved")</h3>
+                        <p class="mb-0 text-muted">CM Approved</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-primary">
+                    <div class="card-body text-center">
+                        <h3 class="text-primary">@Model.Count(c => c.Status == "Paid")</h3>
+                        <p class="mb-0 text-muted">Paid</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Claims Table -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Worker</th>
+                                <th>Department</th>
+                                <th>Rate/Job</th>
+                                <th>Jobs</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Reject Reason</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model)
+                            {
+                                <tr>
+                                    <td><strong>#@claim.Id</strong></td>
+                                    <td>@claim.CreatedAt.ToString("dd/MM/yy")</td>
+                                    <td>@claim.Name @claim.Surname</td>
+                                    <td>
+                                        <span class="badge bg-secondary small">@claim.Department</span>
+                                    </td>
+                                    <td>R @claim.RatePerJob.ToString("N2")</td>
+                                    <td>@claim.NumberOfJobs</td>
+                                    <td><strong>R @claim.TotalAmount.ToString("N2")</strong></td>
+                                    <td>
+                                        @if (claim.Status == "Submitted")
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-clock"></i> Submitted
+                                            </span>
+                                        }
+                                        else if (claim.Status == "PM Approved")
+                                        {
+                                            <span class="badge bg-info">
+                                                <i class="bi bi-check"></i> PM Approved
+                                            </span>
+                                        }
+                                        else if (claim.Status == "CM Approved")
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-all"></i> CM Approved
+                                            </span>
+                                        }
+                                        else if (claim.Status == "Paid")
+                                        {
+                                            <span class="badge bg-primary">
+                                                <i class="bi bi-cash-coin"></i> Paid
+                                            </span>
+                                        }
+                                        else if (claim.Status == "PM Rejected")
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x"></i> PM Rejected
+                                            </span>
+                                        }
+                                        else if (claim.Status == "CM Rejected")
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="bi bi-x-octagon"></i> CM Rejected
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@claim.Status</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrWhiteSpace(claim.RejectReason))
+                                        {
+                                            <span class="text-danger small"
+                                                  data-bs-toggle="tooltip"
+                                                  data-bs-placement="left"
+                                                  title="@claim.RejectReason">
+                                                <i class="bi bi-exclamation-circle"></i> View
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (claim.Status == "CM Approved")
+                                        {
+                                            <a asp-action="HrMarkPaid" asp-route-id="@claim.Id"
+                                               class="btn btn-sm btn-success"
+                                               onclick="return confirm('Mark this claim as PAID?')">
+                                                <i class="bi bi-cash"></i> Mark Paid
+                                            </a>
+                                        }
+                                        else if (claim.Status == "Paid")
+                                        {
+                                            <span class="text-success">
+                                                <i class="bi bi-check-circle-fill"></i> Paid
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">Pending approval</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="6" class="text-end"><strong>Grand Total:</strong></td>
+                                <td colspan="4">
+                                    <strong>R @Model.Sum(c => c.TotalAmount).ToString("N2")</strong>
+                                    <span class="text-muted small ms-2">(@Model.Count() claims)</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="text-end">Total Paid:</td>
+                                <td colspan="4">
+                                    <span class="text-success">
+                                        <strong>R @Model.Where(c => c.Status == "Paid").Sum(c => c.TotalAmount).ToString("N2")</strong>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="text-end">Pending Payment (CM Approved):</td>
+                                <td colspan="4">
+                                    <span class="text-warning">
+                                        <strong>R @Model.Where(c => c.Status == "CM Approved").Sum(c => c.TotalAmount).ToString("N2")</strong>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="alert alert-info mt-4">
+            <i class="bi bi-info-circle"></i>
+            <strong>HR Actions:</strong> You can mark "CM Approved" claims as paid once payment has been processed.
+            Use the Export CSV button to generate reports for payroll processing.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
+    </script>
+}

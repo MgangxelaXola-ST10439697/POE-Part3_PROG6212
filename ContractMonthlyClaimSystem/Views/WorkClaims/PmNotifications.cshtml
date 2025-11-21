@@ -1,0 +1,110 @@
+﻿@model IEnumerable<ContractMonthlyClaimSystem.Models.Notification>
+
+@{
+    ViewData["Title"] = "PM Notifications";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>
+                <i class="bi bi-bell"></i> Project Manager Notifications
+            </h2>
+            <p class="text-muted">Stay updated on claim review requests</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="PmPending" class="btn btn-outline-primary">
+                <i class="bi bi-clipboard-check"></i> Back to Pending Claims
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle-fill"></i>
+            <strong>All caught up!</strong> You have no unread notifications.
+        </div>
+        <div class="text-center py-5">
+            <i class="bi bi-bell-slash display-1 text-muted"></i>
+            <p class="text-muted mt-3">No pending actions required at this time.</p>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i>
+            You have <strong>@Model.Count()</strong> unread notification(s) requiring your attention.
+        </div>
+
+        <div class="row">
+            @foreach (var note in Model)
+            {
+                <div class="col-12 mb-3">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-1 text-center">
+                                    <i class="bi bi-exclamation-circle fs-1 text-warning"></i>
+                                </div>
+                                <div class="col-md-7">
+                                    <h5 class="card-title mb-2">
+                                        @note.Message
+                                    </h5>
+                                    <p class="text-muted mb-0">
+                                        <i class="bi bi-clock"></i>
+                                        @note.CreatedAt.ToString("dd MMM yyyy HH:mm")
+                                        @if (note.WorkClaimId.HasValue)
+                                        {
+                                            <span class="ms-2">
+                                                | <i class="bi bi-file-earmark"></i>
+                                                <strong>Claim #@note.WorkClaimId</strong>
+                                            </span>
+                                        }
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="btn-group" role="group">
+                                        @if (note.WorkClaimId.HasValue)
+                                        {
+                                            <a asp-action="PmAddReason" asp-route-id="@note.WorkClaimId"
+                                               class="btn btn-warning">
+                                                <i class="bi bi-pencil"></i> Add Reason
+                                            </a>
+                                        }
+                                        <a asp-action="PmMarkNotificationRead" asp-route-id="@note.Id"
+                                           class="btn btn-success"
+                                           onclick="return confirm('Mark this notification as read?')">
+                                            <i class="bi bi-check2"></i> Mark Read
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-info-circle"></i> About Notifications
+                </h5>
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>Why am I receiving these?</strong><br>
+                    When you reject a claim without providing a reason, the Construction Manager
+                    may request one. You'll receive a notification to add the rejection reason
+                    so the worker understands why their claim was rejected.
+                </p>
+                <p class="mb-0">
+                    <strong>What should I do?</strong><br>
+                    Click "Add Reason" to provide a detailed explanation for the rejection,
+                    then mark the notification as read once completed.
+                </p>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,126 @@
+﻿@model IEnumerable<ContractMonthlyClaimSystem.Models.WorkClaim>
+
+@{
+    ViewData["Title"] = "PM Pending Claims";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>
+                <i class="bi bi-clipboard-check"></i> Pending Claims Review
+            </h2>
+            <p class="text-muted">Review and approve/reject submitted work claims</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="PmNotifications" class="btn btn-outline-primary">
+                <i class="bi bi-bell"></i> View Notifications
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-success">
+            <i class="bi bi-check-circle"></i>
+            <strong>All caught up!</strong> No pending claims to review at this time.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i>
+            You have <strong>@Model.Count()</strong> claim(s) waiting for your review.
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Worker Name</th>
+                                <th>Department</th>
+                                <th>Rate/Job</th>
+                                <th>Jobs</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model)
+                            {
+                                <tr class="@(claim.ReasonRequired ? "table-warning" : "")">
+                                    <td><strong>#@claim.Id</strong></td>
+                                    <td>@claim.CreatedAt.ToString("dd MMM yyyy")</td>
+                                    <td>@claim.Name @claim.Surname</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@claim.Department</span>
+                                    </td>
+                                    <td>R @claim.RatePerJob.ToString("N2")</td>
+                                    <td>@claim.NumberOfJobs</td>
+                                    <td><strong>R @claim.TotalAmount.ToString("N2")</strong></td>
+                                    <td>
+                                        @if (claim.ReasonRequired)
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-exclamation-triangle"></i> Reason Required
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="bi bi-clock"></i> @claim.Status
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (claim.ReasonRequired)
+                                        {
+                                            <a asp-action="PmAddReason" asp-route-id="@claim.Id"
+                                               class="btn btn-sm btn-warning">
+                                                <i class="bi bi-pencil"></i> Add Reason
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="PmApprove" asp-route-id="@claim.Id"
+                                                   class="btn btn-sm btn-success"
+                                                   onclick="return confirm('Are you sure you want to approve this claim?')">
+                                                    <i class="bi bi-check-circle"></i> Approve
+                                                </a>
+                                                <a asp-action="PmReject" asp-route-id="@claim.Id"
+                                                   class="btn btn-sm btn-danger">
+                                                    <i class="bi bi-x-circle"></i> Reject
+                                                </a>
+                                            </div>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-light">
+                                <td colspan="6" class="text-end"><strong>Total Pending Amount:</strong></td>
+                                <td colspan="3"><strong>R @Model.Sum(c => c.TotalAmount).ToString("N2")</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Any(c => c.ReasonRequired))
+        {
+            <div class="alert alert-warning mt-3">
+                <i class="bi bi-exclamation-triangle"></i>
+                <strong>Action Required:</strong> Some claims need rejection reasons.
+                Please add reasons for highlighted claims.
+            </div>
+        }
+    }
+</div>

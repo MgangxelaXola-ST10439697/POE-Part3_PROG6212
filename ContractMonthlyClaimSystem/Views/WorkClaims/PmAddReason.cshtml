@@ -1,0 +1,115 @@
+﻿@model ContractMonthlyClaimSystem.Models.WorkClaim
+
+@{
+    ViewData["Title"] = "Add Rejection Reason";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="alert alert-warning shadow-sm">
+                <h4 class="alert-heading">
+                    <i class="bi bi-exclamation-triangle"></i> Reason Required
+                </h4>
+                <p class="mb-0">
+                    The Construction Manager has requested that you provide a reason for this rejection.
+                    This helps the worker understand what needs to be corrected.
+                </p>
+            </div>
+
+            <h2 class="mb-4">Add Rejection Reason for Claim #@Model.Id</h2>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="bi bi-file-earmark-text"></i> Claim Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Worker:</strong> @Model.Name @Model.Surname</p>
+                            <p><strong>Department:</strong> <span class="badge bg-secondary">@Model.Department</span></p>
+                            <p><strong>Rate per Job:</strong> R @Model.RatePerJob.ToString("N2")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Number of Jobs:</strong> @Model.NumberOfJobs</p>
+                            <p><strong>Total Amount:</strong> <span class="text-danger fs-5">R @Model.TotalAmount.ToString("N2")</span></p>
+                            <p><strong>Current Status:</strong> <span class="badge bg-danger">@Model.Status</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pencil-square"></i> Provide Rejection Reason
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="PmAddReasonConfirmed" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label for="rejectReason" class="form-label">
+                                <strong>Rejection Reason</strong> <span class="text-danger">*</span>
+                            </label>
+                            <textarea name="rejectReason"
+                                      class="form-control"
+                                      rows="6"
+                                      required
+                                      placeholder="Provide a detailed explanation for why this claim was rejected...
+
+Examples:
+- Insufficient supporting documentation
+- Job count exceeds agreed-upon scope
+- Work quality does not meet standards
+- Missing approval from site supervisor
+- Incorrect rate applied for this type of work"></textarea>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                Be specific and constructive. This reason will be visible to the worker.
+                            </small>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong><i class="bi bi-lightbulb"></i> Tips for writing good rejection reasons:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Be specific about what was wrong</li>
+                                <li>Reference company policies or standards if applicable</li>
+                                <li>Suggest what the worker should do differently</li>
+                                <li>Remain professional and constructive</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                            <a asp-action="PmPending" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i> Submit Reason
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6><i class="bi bi-info-circle"></i> What happens after you submit?</h6>
+                    <ul class="mb-0">
+                        <li>The rejection reason will be added to the claim</li>
+                        <li>The worker will be able to see why their claim was rejected</li>
+                        <li>Related notifications will be marked as resolved</li>
+                        <li>The claim status will remain as "PM Rejected"</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

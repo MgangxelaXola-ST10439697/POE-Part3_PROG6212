@@ -1,0 +1,247 @@
+﻿@model List<ContractMonthlyClaimSystem.Models.Claim>
+@{
+    ViewData["Title"] = "HR Dashboard";
+    var userName = Context.Session.GetString("UserName") ?? "HR Administrator";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold">
+                <i class="bi bi-speedometer2 me-2 text-danger"></i>HR Dashboard
+            </h2>
+            <p class="text-muted">Welcome, @userName - System Overview & Management</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="UserManagement" class="btn btn-primary me-2">
+                <i class="bi bi-people me-2"></i>Manage Users
+            </a>
+            <a asp-action="Reports" class="btn btn-success">
+                <i class="bi bi-file-earmark-bar-graph me-2"></i>Reports
+            </a>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-text display-6 text-primary"></i>
+                    <h3 class="mt-2 mb-0">@ViewBag.TotalClaims</h3>
+                    <small class="text-muted">Total Claims</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm h-100 bg-warning bg-opacity-10">
+                <div class="card-body text-center">
+                    <i class="bi bi-hourglass-split display-6 text-warning"></i>
+                    <h3 class="mt-2 mb-0">@ViewBag.PendingClaims</h3>
+                    <small class="text-muted">Pending</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm h-100 bg-success bg-opacity-10">
+                <div class="card-body text-center">
+                    <i class="bi bi-check-circle display-6 text-success"></i>
+                    <h3 class="mt-2 mb-0">@ViewBag.ApprovedClaims</h3>
+                    <small class="text-muted">Approved</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm h-100 bg-danger bg-opacity-10">
+                <div class="card-body text-center">
+                    <i class="bi bi-x-circle display-6 text-danger"></i>
+                    <h3 class="mt-2 mb-0">@ViewBag.RejectedClaims</h3>
+                    <small class="text-muted">Rejected</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-cash-stack display-6 text-info"></i>
+                    <h3 class="mt-2 mb-0">R @(((decimal)ViewBag.TotalAmount).ToString("N0"))</h3>
+                    <small class="text-muted">Total Value</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm h-100 bg-primary bg-opacity-10">
+                <div class="card-body text-center">
+                    <i class="bi bi-wallet2 display-6 text-primary"></i>
+                    <h3 class="mt-2 mb-0">R @(((decimal)ViewBag.ApprovedAmount).ToString("N0"))</h3>
+                    <small class="text-muted">Approved Value</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-plus display-5 text-primary mb-3"></i>
+                    <h5>Add New User</h5>
+                    <p class="text-muted small">Create lecturer or staff accounts</p>
+                    <a asp-action="UserManagement" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Add User
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-file-earmark-pdf display-5 text-success mb-3"></i>
+                    <h5>Generate Report</h5>
+                    <p class="text-muted small">Export claims data to CSV</p>
+                    <a asp-action="GenerateCSVReport" class="btn btn-outline-success">
+                        <i class="bi bi-download me-2"></i>Download CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-graph-up display-5 text-info mb-3"></i>
+                    <h5>View Reports</h5>
+                    <p class="text-muted small">Detailed claims analytics</p>
+                    <a asp-action="Reports" class="btn btn-outline-info">
+                        <i class="bi bi-bar-chart me-2"></i>View Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-people display-5 text-warning mb-3"></i>
+                    <h5>Manage Users</h5>
+                    <p class="text-muted small">Update user details & rates</p>
+                    <a asp-action="UserManagement" class="btn btn-outline-warning">
+                        <i class="bi bi-gear me-2"></i>Manage
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Claims Table -->
+    <div class="card border-0 shadow">
+        <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Recent Claims</h5>
+            <a asp-action="Reports" class="btn btn-sm btn-outline-light">View All</a>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-4">ID</th>
+                                <th>Lecturer</th>
+                                <th>Email</th>
+                                <th>Hours</th>
+                                <th>Rate</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model.Take(10))
+                            {
+                                <tr>
+                                    <td class="px-4 fw-bold">#@claim.Id</td>
+                                    <td>@claim.LecturerName</td>
+                                    <td class="text-muted">@claim.LecturerEmail</td>
+                                    <td>@claim.HoursWorked hrs</td>
+                                    <td>R @claim.HourlyRate.ToString("N2")</td>
+                                    <td class="fw-bold">R @claim.TotalAmount.ToString("N2")</td>
+                                    <td>
+                                        @if (claim.Status == "Pending")
+                                        {
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        }
+                                        else if (claim.Status.Contains("Approved"))
+                                        {
+                                            <span class="badge bg-success">@claim.Status</span>
+                                        }
+                                        else if (claim.Status.Contains("Rejected"))
+                                        {
+                                            <span class="badge bg-danger">@claim.Status</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@claim.Status</span>
+                                        }
+                                    </td>
+                                    <td>@claim.DateSubmitted.ToString("dd MMM yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <p class="text-muted mt-3">No claims in the system yet.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- HR Responsibilities -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-danger text-white">
+            <h6 class="mb-0"><i class="bi bi-shield-check me-2"></i>HR Administrator Responsibilities</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <h6><i class="bi bi-person-plus text-primary me-2"></i>User Management</h6>
+                    <ul class="small">
+                        <li>Create user accounts (no self-registration)</li>
+                        <li>Set lecturer hourly rates</li>
+                        <li>Update user information</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6><i class="bi bi-file-earmark-bar-graph text-success me-2"></i>Reporting</h6>
+                    <ul class="small">
+                        <li>Generate claims reports</li>
+                        <li>Export data to CSV/PDF</li>
+                        <li>Monitor system activity</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6><i class="bi bi-gear text-warning me-2"></i>System Oversight</h6>
+                    <ul class="small">
+                        <li>Monitor approval workflow</li>
+                        <li>View all claims status</li>
+                        <li>Process payments</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
