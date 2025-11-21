@@ -11,7 +11,7 @@ namespace ContractMonthlyClaimSystem.Data
         {
         }
 
-        public DbSet<WorkClaim> WorkClaims { get; set; }
+        public DbSet<WorkClaim> LecturerClaims { get; set; }
         public DbSet<Claim> Claims { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<EmployeeProfile> EmployeeProfiles { get; set; }

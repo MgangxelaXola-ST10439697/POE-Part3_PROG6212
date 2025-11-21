@@ -26,6 +26,17 @@ namespace ContractMonthlyClaimSystem
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
+            // ------------------------------------------------------
+            // ? ADD SESSION SERVICES
+            // ------------------------------------------------------
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
@@ -47,12 +58,19 @@ namespace ContractMonthlyClaimSystem
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
+            // ------------------------------------------------------
+            // ? ENABLE SESSION BEFORE AUTH / ROUTING ENDPOINTS
+            // ------------------------------------------------------
+            app.UseSession();
+
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapRazorPages();
 
             app.Run();

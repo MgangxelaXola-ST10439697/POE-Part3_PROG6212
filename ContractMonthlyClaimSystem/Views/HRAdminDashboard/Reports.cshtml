@@ -1,158 +1,307 @@
-﻿@model ContractMonthlyClaimSystem.Models.AddEmployeeViewModel
-
+﻿@model List<ContractMonthlyClaimSystem.Models.Claim>
 @{
-    ViewData["Title"] = "Add Employee";
+    ViewData["Title"] = "Claims Reports";
+
+    var totalClaims = Model?.Count() ?? 0;
+    var pendingClaims = Model?.Count(c => c.Status.Contains("Pending")) ?? 0;
+    var approvedClaims = Model?.Count(c => c.Status == "Manager Approved") ?? 0;
+    var rejectedClaims = Model?.Count(c => c.Status.Contains("Rejected")) ?? 0;
+    var totalAmount = Model?.Sum(c => c.TotalAmount) ?? 0;
+    var approvedAmount = Model?.Where(c => c.Status == "Manager Approved").Sum(c => c.TotalAmount) ?? 0;
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-primary text-white py-3">
-                    <h4 class="mb-0">
-                        <i class="bi bi-person-plus-fill me-2"></i>Add New Employee
-                    </h4>
-                </div>
-                <div class="card-body p-4">
-                    <form asp-action="AddEmployee" method="post">
-                        @Html.AntiForgeryToken()
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="fw-bold">
+                <i class="bi bi-file-earmark-bar-graph me-2 text-success"></i>Claims Reports
+            </h2>
+            <p class="text-muted">Generate invoices and export data for payroll processing</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-action="GenerateCSVReport" class="btn btn-success btn-lg">
+                <i class="bi bi-download me-2"></i>Export to CSV
+            </a>
+            <a asp-action="Dashboard" class="btn btn-outline-secondary btn-lg ms-2">
+                <i class="bi bi-arrow-left me-2"></i>Dashboard
+            </a>
+        </div>
+    </div>
 
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle me-2"></i>
-                            <strong>Note:</strong> The new employee will be able to log in immediately with the email and password you provide.
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Name" class="form-label fw-semibold">
-                                    <i class="bi bi-person me-1"></i>First Name
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="Name" class="form-control form-control-lg" placeholder="John" />
-                                <span asp-validation-for="Name" class="text-danger"></span>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="Surname" class="form-label fw-semibold">
-                                    <i class="bi bi-person me-1"></i>Last Name
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="Surname" class="form-control form-control-lg" placeholder="Doe" />
-                                <span asp-validation-for="Surname" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Department" class="form-label fw-semibold">
-                                <i class="bi bi-building me-1"></i>Department
-                            </label>
-                            <input asp-for="Department" class="form-control form-control-lg" placeholder="e.g., Construction, Masonry, etc." />
-                            <span asp-validation-for="Department" class="text-danger"></span>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="DefaultRatePerJob" class="form-label fw-semibold">
-                                    <i class="bi bi-cash-coin me-1"></i>Default Rate Per Job (R)
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <input asp-for="DefaultRatePerJob" type="number" step="0.01"
-                                       class="form-control form-control-lg" placeholder="200.00" />
-                                <span asp-validation-for="DefaultRatePerJob" class="text-danger"></span>
-                                <small class="text-muted">This will be the default rate for workers. Managers can use 0.</small>
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label asp-for="RoleName" class="form-label fw-semibold">
-                                    <i class="bi bi-shield-check me-1"></i>Role
-                                    <span class="text-danger">*</span>
-                                </label>
-                                <select asp-for="RoleName" class="form-select form-select-lg">
-                                    <option value="">-- Select Role --</option>
-                                    <option value="Worker">Worker (IC/Lecturer)</option>
-                                    <option value="ProjectManager">Project Manager (Coordinator)</option>
-                                    <option value="ConstructionManager">Construction Manager</option>
-                                    <option value="HR">HR Administrator</option>
-                                </select>
-                                <span asp-validation-for="RoleName" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <hr class="my-4">
-
-                        <h5 class="mb-3">
-                            <i class="bi bi-key me-2"></i>Login Credentials
-                        </h5>
-
-                        <div class="mb-3">
-                            <label asp-for="Email" class="form-label fw-semibold">
-                                <i class="bi bi-envelope me-1"></i>Email Address
-                                <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="Email" type="email" class="form-control form-control-lg"
-                                   placeholder="employee@cmcs.com" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                            <small class="text-muted">This will be used as their username</small>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="TempPassword" class="form-label fw-semibold">
-                                <i class="bi bi-lock me-1"></i>Temporary Password
-                                <span class="text-danger">*</span>
-                            </label>
-                            <input asp-for="TempPassword" type="password" class="form-control form-control-lg"
-                                   placeholder="Must be strong (e.g., Pass@123!)" />
-                            <span asp-validation-for="TempPassword" class="text-danger"></span>
-                            <small class="text-muted">
-                                Must contain: uppercase, lowercase, number, and special character
-                            </small>
-                        </div>
-
-                        @if (ViewData.ModelState.ErrorCount > 0)
-                        {
-                            <div class="alert alert-danger">
-                                <i class="bi bi-exclamation-triangle me-2"></i>
-                                <strong>Error:</strong> Please correct the errors above.
-                                <ul class="mb-0 mt-2">
-                                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                                    {
-                                        <li>@error.ErrorMessage</li>
-                                    }
-                                </ul>
-                            </div>
-                        }
-
-                        <hr class="my-4">
-
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="EmployeeList" class="btn btn-outline-secondary btn-lg">
-                                <i class="bi bi-arrow-left me-2"></i>Cancel
-                            </a>
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="bi bi-check-circle me-2"></i>Create Employee
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="card mt-3 border-0 bg-light">
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
                 <div class="card-body">
-                    <h6 class="fw-bold">
-                        <i class="bi bi-lightbulb me-2"></i>Role Descriptions
-                    </h6>
-                    <ul class="mb-0 small">
-                        <li><strong>Worker:</strong> Can submit claims and track their status</li>
-                        <li><strong>Project Manager:</strong> Reviews and approves/rejects worker claims</li>
-                        <li><strong>Construction Manager:</strong> Final review after PM approval</li>
-                        <li><strong>HR:</strong> Marks claims as paid, manages employees, exports reports</li>
-                    </ul>
+                    <h3 class="text-primary">@totalClaims</h3>
+                    <small class="text-muted">Total Claims</small>
                 </div>
             </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-warning">@pendingClaims</h3>
+                    <small class="text-muted">Pending</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-success">@approvedClaims</h3>
+                    <small class="text-muted">Approved</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-danger">@rejectedClaims</h3>
+                    <small class="text-muted">Rejected</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h3 class="text-info">R @totalAmount.ToString("N0")</h3>
+                    <small class="text-muted">Total Value</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card border-0 shadow-sm text-center bg-success bg-opacity-10">
+                <div class="card-body">
+                    <h3 class="text-success">R @approvedAmount.ToString("N0")</h3>
+                    <small class="text-muted">Approved Value</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Visual Progress Bar -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3"><i class="bi bi-pie-chart me-2"></i>Claims Status Distribution</h6>
+            @if (totalClaims > 0)
+            {
+                var pendingPct = (pendingClaims * 100.0 / totalClaims);
+                var approvedPct = (approvedClaims * 100.0 / totalClaims);
+                var rejectedPct = (rejectedClaims * 100.0 / totalClaims);
+                var otherPct = 100 - pendingPct - approvedPct - rejectedPct;
+
+                <div class="progress" style="height: 30px;">
+                    <div class="progress-bar bg-warning" style="width: @pendingPct.ToString("F1")%">
+                        @if (pendingPct > 5)
+                        {
+                            <text>Pending @pendingClaims</text>
+                        }
+                    </div>
+                    <div class="progress-bar bg-info" style="width: @otherPct.ToString("F1")%">
+                        @if (otherPct > 5)
+                        {
+                            <text>In Progress</text>
+                        }
+                    </div>
+                    <div class="progress-bar bg-success" style="width: @approvedPct.ToString("F1")%">
+                        @if (approvedPct > 5)
+                        {
+                            <text>Approved @approvedClaims</text>
+                        }
+                    </div>
+                    <div class="progress-bar bg-danger" style="width: @rejectedPct.ToString("F1")%">
+                        @if (rejectedPct > 5)
+                        {
+                            <text>Rejected @rejectedClaims</text>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">No claims data available.</p>
+            }
+        </div>
+    </div>
+
+    <!-- Filter Options -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Filter by Status</label>
+                    <select id="statusFilter" class="form-select">
+                        <option value="all">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Coordinator Approved">Coordinator Approved</option>
+                        <option value="Manager Approved">Manager Approved</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Search</label>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name or email">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Date Range</label>
+                    <input type="month" id="monthFilter" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <button id="clearFilters" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-x-circle me-2"></i>Clear Filters
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Claims Table -->
+    <div class="card border-0 shadow">
+        <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0"><i class="bi bi-table me-2"></i>All Claims Data</h5>
+        </div>
+        <div class="card-body p-0">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0" id="claimsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="px-3">ID</th>
+                                <th>Lecturer Name</th>
+                                <th>Email</th>
+                                <th>Hours</th>
+                                <th>Rate</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Document</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model)
+                            {
+                                <tr class="claim-row"
+                                    data-status="@claim.Status"
+                                    data-name="@claim.LecturerName?.ToLower()"
+                                    data-email="@claim.LecturerEmail?.ToLower()"
+                                    data-date="@claim.DateSubmitted.ToString("yyyy-MM")">
+                                    <td class="px-3 fw-bold">#@claim.Id</td>
+                                    <td>@claim.LecturerName</td>
+                                    <td class="text-muted">@claim.LecturerEmail</td>
+                                    <td>@claim.HoursWorked hrs</td>
+                                    <td>R @claim.HourlyRate.ToString("N2")</td>
+                                    <td class="fw-bold">R @claim.TotalAmount.ToString("N2")</td>
+                                    <td>
+                                        @if (claim.Status == "Pending")
+                                        {
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        }
+                                        else if (claim.Status == "Coordinator Approved")
+                                        {
+                                            <span class="badge bg-info">Coord. Approved</span>
+                                        }
+                                        else if (claim.Status == "Manager Approved")
+                                        {
+                                            <span class="badge bg-success">Fully Approved</span>
+                                        }
+                                        else if (claim.Status.Contains("Rejected"))
+                                        {
+                                            <span class="badge bg-danger">@claim.Status</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@claim.Status</span>
+                                        }
+                                    </td>
+                                    <td>@claim.DateSubmitted.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(claim.FilePath))
+                                        {
+                                            <a href="@claim.FilePath" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-download"></i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="5" class="text-end px-3"><strong>Total:</strong></td>
+                                <td class="fw-bold">R @totalAmount.ToString("N2")</td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted"></i>
+                    <p class="text-muted mt-3">No claims data available.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Export Info -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-body">
+            <h6 class="fw-bold"><i class="bi bi-info-circle me-2"></i>Export Information</h6>
+            <p class="mb-0">
+                The CSV export includes: Claim ID, Lecturer Name, Email, Hours Worked, Hourly Rate, Total Amount, Status, and Date Submitted.
+                Use this data for payroll processing, invoicing, and financial reporting.
+            </p>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusFilter = document.getElementById('statusFilter');
+            const searchInput = document.getElementById('searchInput');
+            const monthFilter = document.getElementById('monthFilter');
+            const clearBtn = document.getElementById('clearFilters');
+            const rows = document.querySelectorAll('.claim-row');
+
+            function filterTable() {
+                const status = statusFilter.value.toLowerCase();
+                const search = searchInput.value.toLowerCase();
+                const month = monthFilter.value;
+
+                rows.forEach(row => {
+                    const rowStatus = row.dataset.status.toLowerCase();
+                    const rowName = row.dataset.name;
+                    const rowEmail = row.dataset.email;
+                    const rowDate = row.dataset.date;
+
+                    let statusMatch = status === 'all' || rowStatus.includes(status);
+                    let searchMatch = !search || rowName.includes(search) || rowEmail.includes(search);
+                    let monthMatch = !month || rowDate === month;
+
+                    row.style.display = statusMatch && searchMatch && monthMatch ? '' : 'none';
+                });
+            }
+
+            statusFilter.addEventListener('change', filterTable);
+            searchInput.addEventListener('input', filterTable);
+            monthFilter.addEventListener('change', filterTable);
+
+            clearBtn.addEventListener('click', function() {
+                statusFilter.value = 'all';
+                searchInput.value = '';
+                monthFilter.value = '';
+                filterTable();
+            });
+        });
+    </script>
 }

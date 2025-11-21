@@ -1,47 +1,252 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-
-@{
     ViewData["Title"] = "Home";
+    var userRole = Context.Session.GetString("UserRole");
+    var userName = Context.Session.GetString("UserName");
+    var isLoggedIn = !string.IsNullOrEmpty(userRole);
 }
 
-<div class="text-center">
-    <h1>Welcome to the Contract Monthly Claim System (CMCS)</h1>
-    <p class="lead">Manage lecturer monthly claims easily and efficiently.</p>
-</div>
+<div class="container mt-4">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-<hr />
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
 
-<div class="row text-center mt-4">
-    <div class="col-md-4">
-        <div class="card shadow-sm p-3">
-            <h4>📄 Submit Claim</h4>
-            <p>Lecturers can submit their monthly teaching claims and upload documents.</p>
-            <a class="btn btn-primary" asp-controller="Claims" asp-action="Submit">Submit Now</a>
+    <!-- Hero Section -->
+    <div class="card border-0 shadow-lg mb-4 bg-primary text-white">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-mortarboard display-3 mb-3"></i>
+            <h1 class="display-5 fw-bold">Contract Monthly Claim System</h1>
+            <p class="lead mb-4">Streamlined claim submission and approval for academic staff</p>
+
+            @if (!isLoggedIn)
+            {
+                <a asp-controller="Account" asp-action="Login" class="btn btn-light btn-lg px-5">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login to Continue
+                </a>
+            }
+            else
+            {
+                <p class="mb-0">
+                    Welcome, <strong>@userName</strong> |
+                    <span class="badge bg-light text-primary">@userRole</span>
+                </p>
+            }
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm p-3">
-            <h4>📊 View Claim History</h4>
-            <p>Track the status of all submitted claims in one place.</p>
-            <a class="btn btn-success" asp-controller="Claims" asp-action="History">View History</a>
+    @if (isLoggedIn)
+    {
+        <!-- Role-Specific Quick Actions -->
+        <div class="row g-4 mb-4">
+            @if (userRole == "Lecturer")
+            {
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-file-earmark-plus display-4 text-primary mb-3"></i>
+                            <h5>Submit Claim</h5>
+                            <p class="text-muted">Submit your monthly teaching hours claim</p>
+                            <a asp-controller="Claims" asp-action="Submit" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-2"></i>Submit Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-list-check display-4 text-success mb-3"></i>
+                            <h5>My Claims</h5>
+                            <p class="text-muted">View and track your submitted claims</p>
+                            <a asp-controller="Claims" asp-action="MyClaims" class="btn btn-success">
+                                <i class="bi bi-eye me-2"></i>View Claims
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-upload display-4 text-info mb-3"></i>
+                            <h5>Upload Document</h5>
+                            <p class="text-muted">Attach supporting documents to claims</p>
+                            <a asp-controller="Documents" asp-action="Upload" class="btn btn-info">
+                                <i class="bi bi-paperclip me-2"></i>Upload
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (userRole == "ProgrammeCoordinator")
+            {
+                <div class="col-md-6">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-hourglass-split display-4 text-warning mb-3"></i>
+                            <h5>Pending Claims</h5>
+                            <p class="text-muted">Review claims awaiting your approval</p>
+                            <a asp-controller="Claims" asp-action="PendingReview" class="btn btn-warning">
+                                <i class="bi bi-clipboard-check me-2"></i>Review Claims
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-clock-history display-4 text-info mb-3"></i>
+                            <h5>Reviewed Claims</h5>
+                            <p class="text-muted">View claims you've already processed</p>
+                            <a asp-controller="Claims" asp-action="ReviewedClaims" class="btn btn-info">
+                                <i class="bi bi-list-ul me-2"></i>View History
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (userRole == "AcademicManager")
+            {
+                <div class="col-md-6">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-shield-check display-4 text-success mb-3"></i>
+                            <h5>Approval Queue</h5>
+                            <p class="text-muted">Final approval for coordinator-approved claims</p>
+                            <a asp-controller="Claims" asp-action="ApprovalQueue" class="btn btn-success">
+                                <i class="bi bi-check2-square me-2"></i>Review Queue
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-clock-history display-4 text-info mb-3"></i>
+                            <h5>Processed Claims</h5>
+                            <p class="text-muted">View claims you've approved or rejected</p>
+                            <a asp-controller="Claims" asp-action="ApprovedClaims" class="btn btn-info">
+                                <i class="bi bi-list-ul me-2"></i>View History
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (userRole == "Admin")
+            {
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-speedometer2 display-4 text-danger mb-3"></i>
+                            <h5>Dashboard</h5>
+                            <p class="text-muted">System overview and statistics</p>
+                            <a asp-controller="Admin" asp-action="Dashboard" class="btn btn-danger">
+                                <i class="bi bi-grid me-2"></i>View Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-people display-4 text-primary mb-3"></i>
+                            <h5>User Management</h5>
+                            <p class="text-muted">Create and manage user accounts</p>
+                            <a asp-controller="Admin" asp-action="UserManagement" class="btn btn-primary">
+                                <i class="bi bi-person-plus me-2"></i>Manage Users
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-file-earmark-bar-graph display-4 text-success mb-3"></i>
+                            <h5>Reports</h5>
+                            <p class="text-muted">Generate reports and export data</p>
+                            <a asp-controller="Admin" asp-action="Reports" class="btn btn-success">
+                                <i class="bi bi-download me-2"></i>View Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Workflow Info -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light">
+            <h5 class="mb-0"><i class="bi bi-diagram-3 me-2"></i>Claim Approval Workflow</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center">
+                <div class="col">
+                    <div class="rounded-circle bg-info text-white d-inline-flex align-items-center justify-content-center mb-2"
+                         style="width:50px;height:50px;">
+                        <i class="bi bi-mortarboard"></i>
+                    </div>
+                    <h6>1. Lecturer</h6>
+                    <p class="small text-muted mb-0">Submits claim with hours worked</p>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                    <i class="bi bi-arrow-right text-muted"></i>
+                </div>
+                <div class="col">
+                    <div class="rounded-circle bg-warning text-dark d-inline-flex align-items-center justify-content-center mb-2"
+                         style="width:50px;height:50px;">
+                        <i class="bi bi-clipboard-check"></i>
+                    </div>
+                    <h6>2. Programme Coordinator</h6>
+                    <p class="small text-muted mb-0">First-level review & approval</p>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                    <i class="bi bi-arrow-right text-muted"></i>
+                </div>
+                <div class="col">
+                    <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center mb-2"
+                         style="width:50px;height:50px;">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h6>3. Academic Manager</h6>
+                    <p class="small text-muted mb-0">Final approval</p>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                    <i class="bi bi-arrow-right text-muted"></i>
+                </div>
+                <div class="col">
+                    <div class="rounded-circle bg-danger text-white d-inline-flex align-items-center justify-content-center mb-2"
+                         style="width:50px;height:50px;">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                    <h6>4. HR / Payment</h6>
+                    <p class="small text-muted mb-0">Process payment</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="col-md-4">
-        <div class="card shadow-sm p-3">
-            <h4>📁 Upload Documents</h4>
-            <p>Attach any missing supporting files to your existing claim.</p>
-            <a class="btn btn-secondary" asp-controller="Documents" asp-action="Upload">Upload File</a>
+    @if (!isLoggedIn)
+    {
+        <!-- Info for Non-Logged In Users -->
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body">
+                <h5><i class="bi bi-info-circle me-2"></i>Need Access?</h5>
+                <p class="mb-0">
+                    Contact HR/Administration to create your account. Self-registration is not available.
+                    Once your account is created, you'll receive login credentials to access the system.
+                </p>
+            </div>
         </div>
-    </div>
-</div>
-
-<hr />
-
-<div class="text-center mt-5">
-    <p><strong>Need help?</strong> Go to the <a asp-controller="Home" asp-action="Privacy">Privacy Page</a> or contact admin.</p>
+    }
 </div>

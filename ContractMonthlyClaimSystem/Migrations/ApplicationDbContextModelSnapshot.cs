@@ -177,7 +177,7 @@ namespace ContractMonthlyClaimSystem.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WorkClaims");
+                    b.ToTable("LecturerClaims");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

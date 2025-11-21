@@ -4,7 +4,6 @@ namespace ContractMonthlyClaimSystem.Controllers
 {
     public class AccountController : Controller
     {
-        // GET: Login page
         public IActionResult Login()
         {
             return View();
@@ -14,41 +13,41 @@ namespace ContractMonthlyClaimSystem.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(string username, string password)
         {
-            //  LECTURER LOGIN
+            // LECTURER LOGIN
             if (username == "lecturer" && password == "lect123")
             {
                 HttpContext.Session.SetString("UserRole", "Lecturer");
-                HttpContext.Session.SetString("UserName", "John Doe (Lecturer)");
+                HttpContext.Session.SetString("UserName", "Dr. John Doe");
                 HttpContext.Session.SetString("UserId", "1");
-                TempData["SuccessMessage"] = "Welcome, Lecturer!";
+                TempData["SuccessMessage"] = "Welcome, Dr. Doe!";
                 return RedirectToAction("Submit", "Claims");
             }
-            //  PROGRAMME COORDINATOR LOGIN
+            // PROGRAMME COORDINATOR LOGIN
             else if (username == "coordinator" && password == "coord123")
             {
-                HttpContext.Session.SetString("UserRole", "Coordinator");
-                HttpContext.Session.SetString("UserName", "Sarah Smith (Coordinator)");
+                HttpContext.Session.SetString("UserRole", "ProgrammeCoordinator");
+                HttpContext.Session.SetString("UserName", "Prof. Sarah Smith");
                 HttpContext.Session.SetString("UserId", "2");
                 TempData["SuccessMessage"] = "Welcome, Programme Coordinator!";
-                return RedirectToAction("Manage", "Claims");
+                return RedirectToAction("PendingReview", "Claims");
             }
-            //  ACADEMIC MANAGER LOGIN (NEW)
+            // ACADEMIC MANAGER LOGIN
             else if (username == "manager" && password == "mgr123")
             {
-                HttpContext.Session.SetString("UserRole", "Manager");
-                HttpContext.Session.SetString("UserName", "David Johnson (Manager)");
+                HttpContext.Session.SetString("UserRole", "AcademicManager");
+                HttpContext.Session.SetString("UserName", "Prof. David Johnson");
                 HttpContext.Session.SetString("UserId", "3");
                 TempData["SuccessMessage"] = "Welcome, Academic Manager!";
-                return RedirectToAction("ManagerReview", "Claims");
+                return RedirectToAction("ApprovalQueue", "Claims");
             }
-            //  HR SUPER-USER LOGIN (NEW)
-            else if (username == "hr" && password == "hr123")
+            // ADMIN (HR) LOGIN
+            else if (username == "admin" && password == "admin123")
             {
-                HttpContext.Session.SetString("UserRole", "HR");
-                HttpContext.Session.SetString("UserName", "Emma Wilson (HR Admin)");
+                HttpContext.Session.SetString("UserRole", "Admin");
+                HttpContext.Session.SetString("UserName", "Emma Wilson");
                 HttpContext.Session.SetString("UserId", "4");
-                TempData["SuccessMessage"] = "Welcome, HR Administrator!";
-                return RedirectToAction("Dashboard", "HR");
+                TempData["SuccessMessage"] = "Welcome, Administrator!";
+                return RedirectToAction("Dashboard", "Admin");
             }
             else
             {

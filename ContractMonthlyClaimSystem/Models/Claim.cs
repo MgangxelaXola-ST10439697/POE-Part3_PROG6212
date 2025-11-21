@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ContractMonthlyClaimSystem.Models
 {
@@ -27,13 +26,13 @@ namespace ContractMonthlyClaimSystem.Models
         public decimal HourlyRate { get; set; }
 
         [Display(Name = "Additional Notes")]
-        public string? Notes { get; set; }  
+        public string? Notes { get; set; }
 
-        [Display(Name = "File Name")]
-        public string? FileName { get; set; } 
+        [Display(Name = "Supporting Document")]
+        public string? FileName { get; set; }
 
         [Display(Name = "File Path")]
-        public string? FilePath { get; set; }  
+        public string? FilePath { get; set; }
 
         public string Status { get; set; } = "Pending";
 
@@ -42,7 +41,5 @@ namespace ContractMonthlyClaimSystem.Models
 
         [Display(Name = "Total Amount")]
         public decimal TotalAmount => HoursWorked * HourlyRate;
-
-        
     }
 }

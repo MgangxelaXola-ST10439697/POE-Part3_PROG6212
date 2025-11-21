@@ -1,109 +1,24 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var userRole = Context.Session.GetString("UserRole");
+    var userName = Context.Session.GetString("UserName");
+    var isLoggedIn = !string.IsNullOrEmpty(userRole);
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Contract Monthly Claim System</title>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-
-    <!-- Bootstrap Icons -->
+    <title>@ViewData["Title"] - CMCS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
-    <style>
-        :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --success-color: #198754;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --info-color: #0dcaf0;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.4rem;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-link {
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border-radius: 0.25rem;
-            margin: 0 0.25rem;
-        }
-
-            .nav-link:hover {
-                background-color: rgba(255, 255, 255, 0.1);
-                transform: translateY(-2px);
-            }
-
-            .nav-link.active {
-                background-color: rgba(255, 255, 255, 0.2);
-            }
-
-        main {
-            flex: 1;
-            padding-bottom: 3rem;
-        }
-
-        footer {
-            background-color: #343a40;
-            color: #fff;
-            padding: 2rem 0;
-            margin-top: auto;
-        }
-
-        .user-info-badge {
-            background-color: rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-weight: 500;
-        }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .btn-logout {
-            background-color: transparent;
-            border: 2px solid white;
-            color: white;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-            .btn-logout:hover {
-                background-color: white;
-                color: #0d6efd;
-            }
-    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
-                <a class="navbar-brand" href="/">
-                    <i class="bi bi-file-earmark-text-fill me-2"></i>
-                    CMCS
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-mortarboard me-2"></i>CMCS
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
@@ -112,12 +27,11 @@
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Index">
-                                <i class="bi bi-house-door me-1"></i>Home
+                                <i class="bi bi-house me-1"></i>Home
                             </a>
                         </li>
 
-                        @* Show different menu based on user role *@
-                        @if (Context.Session.GetString("UserRole") == "Lecturer")
+                        @if (userRole == "Lecturer")
                         {
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Claims" asp-action="Submit">
@@ -125,63 +39,94 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Claims" asp-action="History">
-                                    <i class="bi bi-clock-history me-1"></i>My Claims
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Claims" asp-action="Track">
-                                    <i class="bi bi-search me-1"></i>Track Status
+                                <a class="nav-link" asp-controller="Claims" asp-action="MyClaims">
+                                    <i class="bi bi-list-check me-1"></i>My Claims
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Documents" asp-action="Upload">
-                                    <i class="bi bi-cloud-upload me-1"></i>Upload Document
+                                    <i class="bi bi-upload me-1"></i>Upload
                                 </a>
                             </li>
                         }
-                        else if (Context.Session.GetString("UserRole") == "Coordinator")
+
+                        @if (userRole == "ProgrammeCoordinator")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Claims" asp-action="Manage">
-                                    <i class="bi bi-list-check me-1"></i>Manage Claims
+                                <a class="nav-link" asp-controller="Claims" asp-action="PendingReview">
+                                    <i class="bi bi-hourglass-split me-1"></i>Pending Review
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Claims" asp-action="Track">
-                                    <i class="bi bi-graph-up me-1"></i>View All Claims
+                                <a class="nav-link" asp-controller="Claims" asp-action="ReviewedClaims">
+                                    <i class="bi bi-clock-history me-1"></i>Reviewed
                                 </a>
                             </li>
                         }
-                        else
+
+                        @if (userRole == "AcademicManager")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Home" asp-action="About">
-                                    <i class="bi bi-info-circle me-1"></i>About
+                                <a class="nav-link" asp-controller="Claims" asp-action="ApprovalQueue">
+                                    <i class="bi bi-shield-check me-1"></i>Approval Queue
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Claims" asp-action="ApprovedClaims">
+                                    <i class="bi bi-clock-history me-1"></i>Processed
+                                </a>
+                            </li>
+                        }
+
+                        @if (userRole == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="UserManagement">
+                                    <i class="bi bi-people me-1"></i>Users
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Reports">
+                                    <i class="bi bi-file-bar-graph me-1"></i>Reports
                                 </a>
                             </li>
                         }
                     </ul>
 
-                    <ul class="navbar-nav ms-auto">
-                        @if (!string.IsNullOrEmpty(Context.Session.GetString("UserName")))
+                    <ul class="navbar-nav">
+                        @if (isLoggedIn)
                         {
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle user-info-badge" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-person-circle me-2"></i>
-                                    @Context.Session.GetString("UserName")
-                                    <span class="badge bg-light text-dark ms-2">@Context.Session.GetString("UserRole")</span>
+                                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle me-1"></i>@userName
+                                    @if (userRole == "Lecturer")
+                                    {
+                                        <span class="badge bg-info ms-1">Lecturer</span>
+                                    }
+                                    else if (userRole == "ProgrammeCoordinator")
+                                    {
+                                        <span class="badge bg-warning text-dark ms-1">Coordinator</span>
+                                    }
+                                    else if (userRole == "AcademicManager")
+                                    {
+                                        <span class="badge bg-success ms-1">Manager</span>
+                                    }
+                                    else if (userRole == "Admin")
+                                    {
+                                        <span class="badge bg-danger ms-1">HR Admin</span>
+                                    }
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="bi bi-person me-2"></i>Profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#">
-                                            <i class="bi bi-gear me-2"></i>Settings
-                                        </a>
+                                        <span class="dropdown-item-text">
+                                            <small class="text-muted">Signed in as</small><br>
+                                            <strong>@userName</strong>
+                                        </span>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
@@ -195,7 +140,7 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="btn btn-logout" asp-controller="Account" asp-action="Login">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">
                                     <i class="bi bi-box-arrow-in-right me-1"></i>Login
                                 </a>
                             </li>
@@ -206,66 +151,21 @@
         </nav>
     </header>
 
-    <main role="main" class="pb-3">
+    <main role="main" class="pb-5">
         @RenderBody()
     </main>
 
-    <footer class="text-center">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <h5 class="text-white mb-3">
-                        <i class="bi bi-file-earmark-text me-2"></i>CMCS
-                    </h5>
-                    <p class="text-white-50 small">
-                        Contract Monthly Claim System for Independent Contractor Lecturers
-                    </p>
-                </div>
-                <div class="col-md-4 mb-3 mb-md-0">
-                    <h6 class="text-white mb-3">Quick Links</h6>
-                    <ul class="list-unstyled">
-                        <li><a href="/" class="text-white-50 text-decoration-none small">Home</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none small">Help Center</a></li>
-                        <li><a href="#" class="text-white-50 text-decoration-none small">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-4">
-                    <h6 class="text-white mb-3">Contact Support</h6>
-                    <p class="text-white-50 small">
-                        <i class="bi bi-envelope me-2"></i>support@cmcs.com<br>
-                        <i class="bi bi-telephone me-2"></i>+27 (0)11 123 4567
-                    </p>
-                </div>
-            </div>
-            <hr class="bg-white my-3">
-            <p class="text-white-50 small mb-0">
-                &copy; 2025 Contract Monthly Claim System. All rights reserved.
-            </p>
+    <footer class="footer mt-auto py-3 bg-light border-top">
+        <div class="container text-center">
+            <span class="text-muted">
+                &copy; @DateTime.Now.Year Contract Monthly Claim System | PROG6212 POE Part 3
+            </span>
         </div>
     </footer>
 
-    <!-- Bootstrap JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- jQuery (if needed) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- Custom JS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
-
-    <!-- Auto-dismiss alerts after 5 seconds -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const alerts = document.querySelectorAll('.alert:not(.alert-info)');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    const bsAlert = new bootstrap.Alert(alert);
-                    bsAlert.close();
-                }, 5000);
-            });
-        });
-    </script>
 </body>
 </html>
